@@ -17,8 +17,7 @@ contract TraditionerativeArtFactory is Ownable, ERC721, IERC2981 {
 
     using Counters for Counters.Counter;
     using SafeMath for uint256;
-
-    event NewTga(uint tgaId, uint dna);
+    event NewTgaMinted(uint tgaId, uint dna, bytes32 _ipfsHash);
     event withdrawn(address _address, uint amount);
 
     uint dnaDigits = 8;
@@ -44,13 +43,24 @@ contract TraditionerativeArtFactory is Ownable, ERC721, IERC2981 {
         emit withdrawn(_address, contractBal);
     }
 
+    function tokenURI(uint256 tokenId, bytes32 _ipfsHash) public view virtual returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _ipfsHash)) : "";
+    }
+
     function _baseURI() internal view virtual override returns (string memory) {
         return "ipfs://";
     }
 
-    function safeMintTga(address _to) public payable enforceSupply onlyOwner {
+    /**
+     * @param _to address to mint to
+     * @param _ipfsHash IPFS hash for metadata
+     */
+    function safeMintTga(address _to, bytes32 _ipfsHash) public payable enforceSupply onlyOwner {
         _safeMint(_to, _tokenId.current());
-        emit NewTga(_tokenId.current(), _generateRandomDna(_to));
+        emit NewTgaMinted(_tokenId.current(), _generateRandomDna(_to), _ipfsHash);
         _tokenId.increment();
     }
     
