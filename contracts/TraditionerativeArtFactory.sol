@@ -26,6 +26,7 @@ contract TraditionerativeArtFactory is Ownable, ERC721, IERC2981 {
 
     constructor() ERC721("TraditionerativeArt", "TGA") { }
 
+
     /**
      * @dev withdraw contract balance to a wallet
      * @dev wouldn't execute if it isn't the owner who is executing the command
@@ -59,10 +60,10 @@ contract TraditionerativeArtFactory is Ownable, ERC721, IERC2981 {
     /**
      * @dev miniting the token
      * @dev makes sure that no more than 10K tokens are minted
-     * @param _to address to mint to
+    m* @param _to address to mint to
      * @param _ipfsHash IPFS hash for metadata
      */
-    function safeMintTga(address _to, bytes32 _ipfsHash) public payable onlyOwner {
+    function safeMintTga(address _to, bytes32 _ipfsHash) public payable {
         require(_tokenId.current() <= 9999);
         _safeMint(_to, _tokenId.current());
         emit NewTgaMinted(_tokenId.current(), _generateRandomDna(_to), _ipfsHash);
