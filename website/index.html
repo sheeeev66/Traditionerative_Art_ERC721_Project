@@ -15,13 +15,21 @@
       function startApp() {
         var tgaAdress = "YOUR_CONTRACT_ADDRESS";
         traditionerativeArt = new web3js.eth.Contract(traditionerativeArtABI, tgaAdress);
+
+        var accountInterval = setInterval(function() {
+          // Check if account has changed
+          if (web3.eth.accounts[0] !== userAccount) {
+            userAccount = web3.eth.accounts[0];
+            // Call a function to update the UI with the new account
+            
+          }
+        }, 100);
       }
 
 
       function tgaToOwner(id) {
        return traditionerativeArt.methods._owners(id).call();
       }
-      // 2. Define `getZombiesByOwner` here
 
       window.addEventListener('load', function() {
 
