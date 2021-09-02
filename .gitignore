@@ -2,3 +2,4 @@ package.json
 package-lock.json
 node_modules/
 Traditionerative_Art_ERC721_Project.Contracts.csproj
+.env
