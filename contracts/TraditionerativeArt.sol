@@ -15,7 +15,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
 
     using Counters for Counters.Counter;
 
-    event NewTgaMinted(uint tgaId, uint dna, bytes32 _ipfsHash);
+    event NewTgaMinted(uint tgaId, uint dna);
     event withdrawn(address _address, uint amount);
 
     // DNA modulus: 10 in the power of "dna digits"
@@ -56,13 +56,12 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev miniting the token
      * @dev makes sure that no more than 10K tokens are minted
     m* @param _to address to mint to
-     * @param _ipfsHash IPFS hash for metadata
      */
-    function safeMintTga(address _to, bytes32 _ipfsHash) public payable {
+    function safeMintTga(address _to) public payable {
         require(_tokenId.current() <= 9999, "No more tokens avalible");
         require(msg.value == 0.01 ether, "Ether value sent is not correct");
         _safeMint(_to, _tokenId.current());
-        emit NewTgaMinted(_tokenId.current(), _generateRandomDna(_to), _ipfsHash);
+        emit NewTgaMinted(_tokenId.current(), _generateRandomDna(_to));
         _tokenId.increment();
     }
     
