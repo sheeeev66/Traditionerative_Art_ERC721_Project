@@ -18,11 +18,14 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     event NewTgaMinted(uint tgaId, uint dna);
     event withdrawn(address _address, uint amount);
 
-    // DNA modulus: 10 in the power of "dna digits"
+    // DNA modulus: 10 in the power of "dna digits" (in this case: 8)
     uint32 dnaModulus = 10 ** 8;
     
     // track token ID
     Counters.Counter private _tokenId;
+
+    // mapping from token ID to DNA
+    mapping(uint32 => uint32) idToDna;
 
     constructor() ERC721("TraditionerativeArt", "TGA") { }
 
@@ -49,7 +52,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev setting base URI
      */
     function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn/metadata/";
+        return "ipfs://QmQ4JMu5ePj89AxhSznsMyknZHoWchVyLTZTp18TbUUa4x/metadata/";
     }
 
     /**
@@ -60,19 +63,27 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     function safeMintTga(address _to) public payable {
         require(_tokenId.current() <= 9999, "No more tokens avalible");
         require(msg.value >= 0.01 ether, "Ether value sent is not correct");
-        _safeMint(_to, _tokenId.current());
-        emit NewTgaMinted(_tokenId.current(), _generateRandomDna(_to));
+
+        uint32 randDna = _generateRandomDna(_to);
+        uint32 id = uint32(_tokenId.current());
+
+        _safeMint(_to, id);
+
+        // set the id to dna
+        idToDna[id] = randDna;
+
+        emit NewTgaMinted(id, randDna);
         _tokenId.increment();
     }
     
     /**
-     * @dev Generates random number for the DNA by using the timestamp, block difficulty, block number, coinbase and the adress of the person who minted.
+     * @dev Generates random number for the DNA by using the timestamp, block difficulty, block number and the adress of the person who minted.
      * @param _address the address of the person who minted.
      * @return random DNA
      */
-    function _generateRandomDna(address _address) private view returns (uint) {
-        uint rand = uint(keccak256(abi.encodePacked(block.coinbase, block.difficulty, block.number, block.timestamp, _address)));
-        return rand % dnaModulus;
+    function _generateRandomDna(address _address) private view returns (uint32) {
+        uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp, _address)));
+        return uint32(rand % dnaModulus);
     }
 
     /**
