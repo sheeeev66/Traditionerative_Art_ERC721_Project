@@ -21,7 +21,7 @@
           if (web3.eth.accounts[0] !== userAccount) {
             userAccount = web3.eth.accounts[0];
             // Call a function to update the UI with the new account
-            
+
           }
         }, 100);
       }
@@ -29,6 +29,10 @@
 
       function tgaToOwner(id) {
        return traditionerativeArt.methods._owners(id).call();
+      }
+
+      function getTokenDna(id) {
+        return traditionerativeArt.methods.idToDna(id).call();        
       }
 
       window.addEventListener('load', function() {
