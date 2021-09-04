@@ -26,8 +26,27 @@
           }
         }, 100);
       }
+      
 
-
+      function safeMint() {
+        // This is going to take a while, so update the UI to let the user know
+        // the transaction has been sent 
+        $("#txStatus").text("Minting a new token on the blockchain. This may take a while...");
+        // Send the tx to our contract:
+        return traditionerativeArt.methods.safeMint()
+        .send({ from: userAccount })
+        .on("receipt", function(receipt) {
+          $("#txStatus").text("Successfully minted!");
+          // Transaction was accepted into the blockchain
+        })
+        .on("error", function(error) {
+          // Do something to alert the user their transaction has failed
+          $("#txStatus").text(error);
+        });
+      }
+      
+      
+      
       function tgaToOwner(id) {
        return traditionerativeArt.methods._owners(id).call()
       }
