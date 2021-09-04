@@ -12,7 +12,8 @@
     <script>
       var traditionerativeArt;
       var userAccount;
-
+      
+      // start app:
       function startApp() {
         var tgaAdress = "YOUR_CONTRACT_ADDRESS";
         traditionerativeArt = new web3js.eth.Contract(traditionerativeArtABI, tgaAdress);
@@ -27,7 +28,8 @@
         }, 100);
       }
       
-
+      
+      // minting:
       function safeMint() {
         // This is going to take a while, so update the UI to let the user know
         // the transaction has been sent 
@@ -46,7 +48,7 @@
       }
       
       
-      
+      ///// mappings:
       function tgaToOwner(id) {
        return traditionerativeArt.methods._owners(id).call()
       }
@@ -55,6 +57,7 @@
         return traditionerativeArt.methods.idToDna(id).call()     
       }
 
+      ///// web3js implementation:
       window.addEventListener('load', function() {
 
         // Checking if Web3 has been injected by the browser (Mist/MetaMask)
