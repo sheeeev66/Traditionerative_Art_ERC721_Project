@@ -24,9 +24,6 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     // track token ID
     Counters.Counter private _tokenId;
 
-    // mapping from token ID to DNA
-    mapping(uint32 => uint32) idToDna;
-
     constructor() ERC721("TraditionerativeArt", "TGA") { }
 
 
@@ -68,9 +65,6 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         uint32 id = uint32(_tokenId.current());
 
         _safeMint(_to, id);
-
-        // set the id to dna
-        idToDna[id] = randDna;
 
         emit NewTgaMinted(id, randDna);
         _tokenId.increment();
