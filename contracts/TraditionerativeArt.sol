@@ -17,9 +17,6 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
 
     event NewTgaMinted(uint tgaId, uint dna);
     event withdrawn(address _address, uint amount);
-
-    // DNA modulus: 10 in the power of "dna digits" (in this case: 8)
-    uint32 dnaModulus = 10 ** 8;
     
     // track token ID
     Counters.Counter private _tokenId;
@@ -76,7 +73,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      */
     function _generateRandomDna() private view returns (uint32) {
         uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp)));
-        return uint32(rand % dnaModulus);
+        return uint32(rand %  /* DNA modulus: 10 in the power of "dna digits" (in this case: 8) */ (10 ** 8) );
     }
 
     /**
