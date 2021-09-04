@@ -16,16 +16,10 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     using Counters for Counters.Counter;
 
     event NewTgaMinted(uint tgaId, uint dna);
-    event withdrawn(address _address, uint amount);
-
-    // DNA modulus: 10 in the power of "dna digits" (in this case: 8)
-    uint32 dnaModulus = 10 ** 8;
+    event Withdrawn(address _address, uint amount);
     
     // track token ID
     Counters.Counter private _tokenId;
-
-    // mapping from token ID to DNA
-    mapping(uint32 => uint32) idToDna;
 
     constructor() ERC721("TraditionerativeArt", "TGA") { }
 
@@ -64,26 +58,21 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         require(_tokenId.current() <= 9999, "No more tokens avalible");
         require(msg.value >= 0.01 ether, "Ether value sent is not correct");
 
-        uint32 randDna = _generateRandomDna(_to);
         uint32 id = uint32(_tokenId.current());
 
         _safeMint(_to, id);
 
-        // set the id to dna
-        idToDna[id] = randDna;
-
-        emit NewTgaMinted(id, randDna);
+        emit NewTgaMinted(id, _generateRandomDna());
         _tokenId.increment();
     }
     
     /**
-     * @dev Generates random number for the DNA by using the timestamp, block difficulty, block number and the adress of the person who minted.
-     * @param _address the address of the person who minted.
+     * @dev Generates random number for the DNA by using the timestamp, block difficulty and the block number.
      * @return random DNA
      */
-    function _generateRandomDna(address _address) private view returns (uint32) {
-        uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp, _address)));
-        return uint32(rand % dnaModulus);
+    function _generateRandomDna() private view returns (uint32) {
+        uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp)));
+        return uint32(rand %  /* DNA modulus: 10 in the power of "dna digits" (in this case: 8) */ (10 ** 8) );
     }
 
     /**

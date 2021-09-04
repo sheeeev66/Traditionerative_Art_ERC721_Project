@@ -2,16 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Traditionerative Art front-end</title>
+    <title>Traditionerative Art</title>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="web3.min.js"></script>
     <script language="javascript" type="text/javascript" src="traditionerative_art_abi.js"></script>
   </head>
   <body>
+    <div id="txStatus"></div>
 
     <script>
       var traditionerativeArt;
-
+      var userAccount;
+      
+      // start app:
       function startApp() {
         var tgaAdress = "YOUR_CONTRACT_ADDRESS";
         traditionerativeArt = new web3js.eth.Contract(traditionerativeArtABI, tgaAdress);
@@ -25,16 +28,33 @@
           }
         }, 100);
       }
-
-
+      
+      
+      // minting:
+      function safeMint() {
+        // This is going to take a while, so update the UI to let the user know
+        // the transaction has been sent 
+        $("#txStatus").text("Minting a new token on the blockchain. This may take a while...");
+        // Send the tx to our contract:
+        return traditionerativeArt.methods.safeMint()
+        .send({ from: userAccount, value: web3js.utils.toWei("0.01", "ether") })
+        .on("receipt", function(receipt) {
+          $("#txStatus").text("Successfully minted!");
+          // Transaction was accepted into the blockchain
+        })
+        .on("error", function(error) {
+          // Do something to alert the user their transaction has failed
+          $("#txStatus").text(error);
+        });
+      }
+      
+      
+      ///// mappings:
       function tgaToOwner(id) {
-       return traditionerativeArt.methods._owners(id).call();
+       return traditionerativeArt.methods._owners(id).call()
       }
 
-      function getTokenDna(id) {
-        return traditionerativeArt.methods.idToDna(id).call();        
-      }
-
+      ///// web3js implementation:
       window.addEventListener('load', function() {
 
         // Checking if Web3 has been injected by the browser (Mist/MetaMask)
