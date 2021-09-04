@@ -16,7 +16,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     using Counters for Counters.Counter;
 
     event NewTgaMinted(uint tgaId, uint dna);
-    event withdrawn(address _address, uint amount);
+    event Withdrawn(address _address, uint amount);
     
     // track token ID
     Counters.Counter private _tokenId;
