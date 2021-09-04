@@ -39,7 +39,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
 
     /**
      * @dev withdraw contract balance to a wallet
-     * @dev wouldn't execute if it isn't the owner who is executing the command
+     * @dev won't execute if it isn't the owner who is executing the command
      * @param _address the address to withdraw to
      */
     function withdraw(address payable _address) public onlyOwner {
