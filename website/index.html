@@ -37,7 +37,7 @@
         $("#txStatus").text("Minting a new token on the blockchain. This may take a while...");
         // Send the tx to our contract:
         return traditionerativeArt.methods.safeMint()
-        .send({ from: userAccount })
+        .send({ from: userAccount, value: web3js.utils.toWei("0.01", "ether") })
         .on("receipt", function(receipt) {
           $("#txStatus").text("Successfully minted!");
           // Transaction was accepted into the blockchain
