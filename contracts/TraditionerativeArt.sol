@@ -64,7 +64,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         require(_tokenId.current() <= 9999, "No more tokens avalible");
         require(msg.value >= 0.01 ether, "Ether value sent is not correct");
 
-        uint32 randDna = _generateRandomDna(_to);
+        uint32 randDna = _generateRandomDna();
         uint32 id = uint32(_tokenId.current());
 
         _safeMint(_to, id);
@@ -77,12 +77,11 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     }
     
     /**
-     * @dev Generates random number for the DNA by using the timestamp, block difficulty, block number and the adress of the person who minted.
-     * @param _address the address of the person who minted.
+     * @dev Generates random number for the DNA by using the timestamp, block difficulty and the block number.
      * @return random DNA
      */
-    function _generateRandomDna(address _address) private view returns (uint32) {
-        uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp, _address)));
+    function _generateRandomDna() private view returns (uint32) {
+        uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp)));
         return uint32(rand % dnaModulus);
     }
 
