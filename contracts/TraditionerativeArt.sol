@@ -39,7 +39,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     function withdraw(address payable _address) public onlyOwner {
         uint contractBal = address(this).balance;
         _address.transfer(contractBal);
-        emit withdrawn(_address, contractBal);
+        emit Withdrawn(_address, contractBal);
     }
 
     /**
