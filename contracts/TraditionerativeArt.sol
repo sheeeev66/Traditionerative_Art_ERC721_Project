@@ -58,12 +58,11 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         require(_tokenId.current() <= 9999, "No more tokens avalible");
         require(msg.value >= 0.01 ether, "Ether value sent is not correct");
 
-        uint32 randDna = _generateRandomDna();
         uint32 id = uint32(_tokenId.current());
 
         _safeMint(_to, id);
 
-        emit NewTgaMinted(id, randDna);
+        emit NewTgaMinted(id, _generateRandomDna());
         _tokenId.increment();
     }
     
