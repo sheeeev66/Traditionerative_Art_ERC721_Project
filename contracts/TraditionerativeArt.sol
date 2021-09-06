@@ -58,8 +58,8 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @param _tokenCount the ammount of tokens to mint
      */
     function safeMintTga(address _to, uint _tokenCount) public payable {
-        require(msg.value >= 0.01 ether, "Ether value sent is not correct");
         require(_tokenCount <= 20, "Can't mint more than 20 tokens at a time");
+        require(msg.value >= 0.01 ether, "Ether value sent is not correct");
 
         for (uint i=0; i < _tokenCount; i++) {
             require(_tokenId.current() <= 9999, "No more tokens avalible");
