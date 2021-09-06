@@ -10,7 +10,12 @@
   <body>
     <div id="txStatus"></div>
 
-    <button onclick="safeMint()">mint</button>
+    <form name="myform" action="#" onsubmit="return safeMintTga(tokenCount)" method="post">
+  
+      Amount to mint:<br>
+      <input type="text" name="AmountToMint" id="tokenCount"><br/>
+      
+    </form>
 
     <script>
       var traditionerativeArt;
@@ -33,12 +38,12 @@
       
       
       // minting:
-      function safeMint() {
+      function safeMintTga(tokenCount) {
         // This is going to take a while, so update the UI to let the user know
         // the transaction has been sent 
-        $("#txStatus").text("Minting a new token on the blockchain. This may take a while...");
+        $("#txStatus").text("Minting new tokens on the blockchain. This may take a while...");
         // Send the tx to our contract:
-        return traditionerativeArt.methods.safeMint()
+        return traditionerativeArt.methods.safeMintTga(tokenCount)
         .send({ from: userAccount, value: web3js.utils.toWei("0.01", "ether") })
         .on("receipt", function(receipt) {
           $("#txStatus").text("Successfully minted!");
