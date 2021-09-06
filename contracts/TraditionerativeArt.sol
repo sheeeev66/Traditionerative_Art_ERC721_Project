@@ -54,10 +54,9 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev makes sure that no more than 10K tokens are minted
      * @dev makes sure that at least 0.01 ether is paid before minting
      * @dev makes sure that no more than 20 tokens are minted at once
-     * @param _to address to mint to
      * @param _tokenCount the ammount of tokens to mint
      */
-    function safeMintTga(address _to, uint _tokenCount) public payable {
+    function safeMintTga(uint _tokenCount) public payable {
         require(_tokenCount <= 20, "Can't mint more than 20 tokens at a time");
         require(msg.value >= 0.01 ether, "Ether value sent is not correct");
 
@@ -65,7 +64,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
             require(_tokenId.current() <= 9999, "No more tokens avalible");
             uint32 id = uint32(_tokenId.current());
 
-            _safeMint(_to, id);
+            _safeMint(msg.sender, id);
 
             emit NewTgaMinted(id, _generateRandomDna());
             _tokenId.increment();
