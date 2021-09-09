@@ -89,7 +89,26 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         require(_exists(tokenId), "ERC2981RoyaltyStandard: Royalty info for nonexistent token");
         return (address(0), salePrice * 500 /*percentage in basis points (5%)*/ / 10000);
     }
-    
 
+
+    /**
+     * @dev get if the caller owns an NFT
+     */
+    function isTokenHolder() external view returns(bool) { 
+        // This is where we will store the result:
+        bool result;
+        // Loop through all the NFTs to check if the function caller holds any tokens:
+        for (uint i = 0; i <= _tokenId.current();) {
+            if (msg.sender == ownerOf(i)) {
+                result = true;
+                // Update "i" to be higher than the current supply to exit the loop
+                i = _tokenId.current() + 1;
+            } else {
+                result = false;
+                i++;
+            }
+        }
+        return result;
+    }
 
 }
