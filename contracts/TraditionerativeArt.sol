@@ -83,7 +83,8 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev This is to provide the NFTs utility. NFT that burns ether and as a result makes its value increase.
      * @param tokenId the token Id 
      * @param salePrice the price the NFT was sold for
-     * @dev return: send 5% royalty to address 0SS
+     * @dev return: send 5% royalty to the zero address
+     * @notice this function is to be called by exchanges to get the royalty information.
      */
     function royaltyInfo(uint256 tokenId, uint256 salePrice) external view override returns (address receiver, uint256 royaltyAmount) {
         require(_exists(tokenId), "ERC2981RoyaltyStandard: Royalty info for nonexistent token");
