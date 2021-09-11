@@ -96,6 +96,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev get if the caller owns an NFT
      */
     function isTokenHolder() external view returns(bool) { 
+        /*
         // This is where we will store the result:
         bool result;
         // Loop through all the NFTs to check if the function caller holds any tokens:
@@ -110,6 +111,17 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
             }
         }
         return result;
+        */
+        /*
+        if (balanceOf(msg.sender) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+        */
+        return (balanceOf(msg.sender) > 0) ? true : false;
+
+        // lmao dont laugh at me.. I was writing this function when I was half asleep
     }
 
 }
