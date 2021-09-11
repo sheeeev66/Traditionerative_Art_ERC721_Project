@@ -15,11 +15,14 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
 
     using Counters for Counters.Counter;
 
-    event NewTgaMinted(uint tgaId, uint dna);
+    event NewTgaMinted(uint tgaId, uint dna, string ipfsCID);
     event Withdrawn(address _address, uint amount);
     
     // track token ID
     Counters.Counter private _tokenId;
+
+    // mapping to store the IPFS CID for each token ID
+    mapping(uint => string) private idToIpfs;
 
     constructor() ERC721("TraditionerativeArt", "TGA") { }
 
@@ -42,10 +45,18 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     }
 
     /**
-     * @dev setting base URI
+     * @dev overriding this to return ipfs CID
+     * The minting function on the contract is called after the metadata and art is generated.
+     * The art will be stored on IPFS as well as the metadata.
+     * The ipfs link to the art will be located inside the metadata.
+     * When calling the minting function, you call it with the CID of the token that was generated.
+     * Then that CID is assigned to the token ID.
      */
-    function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://QmQ4JMu5ePj89AxhSznsMyknZHoWchVyLTZTp18TbUUa4x/metadata/";
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+        string memory ipfsCID = idToIpfs[tokenId];
+        return string(abi.encodePacked("ipfs://", ipfsCID));
     }
 
     /**
@@ -55,7 +66,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev makes sure that no more than 20 tokens are minted at once
      * @param _tokenCount the ammount of tokens to mint
      */
-    function safeMintTga(uint _tokenCount) public payable {
+    function safeMintTga(uint _tokenCount,  string memory _ipfsCID) public payable {
         require(_tokenCount <= 20, "Can't mint more than 20 tokens at a time");
         require(msg.value >= 0.01 ether, "Ether value sent is not correct");
 
@@ -63,8 +74,9 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
             require(_tokenId.current() <= 9999, "No more tokens avalible");
 
             _safeMint(msg.sender, _tokenId.current());
+            idToIpfs[_tokenId.current()] = _ipfsCID;
 
-            emit NewTgaMinted(_tokenId.current(), _generateRandomDna());
+            emit NewTgaMinted(_tokenId.current(), _generateRandomDna(), _ipfsCID);
             _tokenId.increment();
         }
     }
