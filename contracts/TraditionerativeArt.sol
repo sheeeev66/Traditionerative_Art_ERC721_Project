@@ -14,17 +14,21 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
 
     using Counters for Counters.Counter;
+    using Strings for uint256;
 
-    event NewTgaMinted(uint tgaId, uint dna, string ipfsCID);
+    event NewTgaMinted(uint tgaId);
     event Withdrawn(address _address, uint amount);
     
     // track token ID
     Counters.Counter private _tokenId;
 
-    // mapping to store the IPFS CID for each token ID
-    mapping(uint => string) private idToIpfs;
+    // Pre Mint:
+    bool private preMintOver;
 
-    constructor() ERC721("TraditionerativeArt", "TGA") { }
+    // base URI
+    string private baseURIcid;
+
+    constructor() ERC721("Traditionerative Art", "TGA") { }
 
 
     function supportsInterface(bytes4 interfaceId) public view override(ERC721, IERC165) returns (bool) {
@@ -45,19 +49,23 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     }
 
     /**
-     * @dev overriding this to return ipfs CID
-     * The minting function on the contract is called after the metadata and art is generated.
-     * The art will be stored on IPFS as well as the metadata.
-     * The ipfs link to the art will be located inside the metadata.
-     * When calling the minting function, you call it with the CID of the token that was generated.
-     * Then that CID is assigned to the token ID.
+     * @dev this function should be called after *all the art is generated* and uploaded to IPFS.
+     * @notice calling this function enables minting!! So don't call it unless you are sure.
+     * @notice RECOMMENDED NOT TO CALL THIS FUNCTION UNTILL ALL THE ART IS UPLOADED TO IPFS!!
+     */
+    function setBaseURIcid(string memory cid) public onlyOwner {
+        baseURIcid = cid;
+    }
+
+    /**
+     * @dev overriding this to return ipfs URI with a set CID
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-        string memory ipfsCID = idToIpfs[tokenId];
-        return string(abi.encodePacked("ipfs://", ipfsCID));
+        return bytes(baseURIcid).length > 0 ? string(abi.encodePacked("ipfs://", baseURIcid, "/", tokenId.toString(), ".json")) : "";
     }
+
 
     /**
      * @dev miniting the token
@@ -66,29 +74,23 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev makes sure that no more than 20 tokens are minted at once
      * @param _tokenCount the ammount of tokens to mint
      */
-    function safeMintTga(uint _tokenCount,  string memory _ipfsCID) public payable {
-        require(_tokenCount <= 20, "Can't mint more than 20 tokens at a time");
-        require(msg.value >= 0.01 ether, "Ether value sent is not correct");
+    function safeMintTga(uint _tokenCount) public payable {
+        require(preMintOver, "TraditionerativeArt: Minting has not yet started");
+        require(bytes(baseURIcid).length > 0, "TraditionerativeArt: No IPFS CID set. Minting will be enabled once setBaseURIcid(cid) will be called");
+        require(_tokenCount <= 20, "TraditionerativeArt: Can't mint more than 20 tokens at a time");
+        require(_tokenCount != 0, "TraditionerativeArt: You have to mint at least 1 token");
+        require(msg.value >= 10000000000000000*_tokenCount, "TraditionerativeArt: Ether value sent is not correct"); // price for 1: 0.01 eth
 
         for (uint i=0; i < _tokenCount; i++) {
-            require(_tokenId.current() <= 9999, "No more tokens avalible");
+            require(_tokenId.current() <= 9899, "TraditionerativeArt: No more tokens avalible");
 
             _safeMint(msg.sender, _tokenId.current());
-            idToIpfs[_tokenId.current()] = _ipfsCID;
 
-            emit NewTgaMinted(_tokenId.current(), _generateRandomDna(), _ipfsCID);
+            emit NewTgaMinted(_tokenId.current());
             _tokenId.increment();
         }
     }
     
-    /**
-     * @dev Generates random number for the DNA by using the timestamp, block difficulty and the block number.
-     * @return random DNA
-     */
-    function _generateRandomDna() private view returns (uint32) {
-        uint rand = uint(keccak256(abi.encodePacked(block.difficulty, block.number, block.timestamp)));
-        return uint32(rand %  /* DNA modulus: 10 in the power of "dna digits" (in this case: 8) */ (10 ** 8) );
-    }
 
     /**
      * @dev Royalty info for the exchange to read (using EIP-2981 royalty standard)
@@ -107,7 +109,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     /**
      * @dev get if the caller owns an NFT
      */
-    function isTokenHolder() external view returns(bool) { 
+    function isTokenHolder() external view returns(bool) {
         /*
         // This is where we will store the result:
         bool result;
