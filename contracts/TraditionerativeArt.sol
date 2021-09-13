@@ -22,8 +22,8 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     // track token ID
     Counters.Counter private _tokenId;
 
-    // Pre Mint:
-    bool private preMintOver;
+    // Loanch (when true its loanched)
+    bool private launch;
 
     // base URI
     string private baseURIcid;
@@ -66,6 +66,31 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         return bytes(baseURIcid).length > 0 ? string(abi.encodePacked("ipfs://", baseURIcid, "/", tokenId.toString(), ".json")) : "";
     }
 
+    /**
+     * @dev 20 tokens
+     */
+    function ownerMintAndLaunch() public onlyOwner {
+        require(bytes(baseURIcid).length > 0, "TraditionerativeArt: No IPFS CID set. Minting will be enabled once setBaseURIcid(cid) will be called");
+        require(launch == false, "TraditionerativeArt: Already Loanched");
+    
+        for (uint i=0; i < _tokenCount; i++) {
+            require(_tokenId.current() <= 19, "TraditionerativeArt: No more tokens avalible");
+
+            _safeMint(msg.sender, _tokenId.current());
+
+            emit NewTgaMinted(_tokenId.current());
+            _tokenId.increment();
+        }
+        loanch = false;
+    }
+    }
+    
+    /**
+     * @dev 100 tokens
+     */
+    function preMint() public {
+        
+    }
 
     /**
      * @dev miniting the token
@@ -75,14 +100,13 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @param _tokenCount the ammount of tokens to mint
      */
     function safeMintTga(uint _tokenCount) public payable {
-        require(preMintOver, "TraditionerativeArt: Minting has not yet started");
-        require(bytes(baseURIcid).length > 0, "TraditionerativeArt: No IPFS CID set. Minting will be enabled once setBaseURIcid(cid) will be called");
+        require(launch, "TraditionerativeArt: Minting has not yet started");
         require(_tokenCount <= 20, "TraditionerativeArt: Can't mint more than 20 tokens at a time");
         require(_tokenCount != 0, "TraditionerativeArt: You have to mint at least 1 token");
         require(msg.value >= 10000000000000000*_tokenCount, "TraditionerativeArt: Ether value sent is not correct"); // price for 1: 0.01 eth
 
         for (uint i=0; i < _tokenCount; i++) {
-            require(_tokenId.current() <= 9899, "TraditionerativeArt: No more tokens avalible");
+            require(_tokenId.current() <= 9879, "TraditionerativeArt: No more tokens avalible");
 
             _safeMint(msg.sender, _tokenId.current());
 
