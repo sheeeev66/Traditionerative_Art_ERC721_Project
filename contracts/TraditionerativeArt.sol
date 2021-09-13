@@ -24,9 +24,11 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
 
     // Loanch (when true its loanched)
     bool private launched;
-
     // base URI
     string private baseURIcid;
+
+    // To enforce the pre mint phase
+    mapping(address => bool) preMintParticipant;
 
     constructor() ERC721("Traditionerative Art", "TGA") { }
 
@@ -51,7 +53,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     /**
      * @dev this function should be called after *all the art is generated* and uploaded to IPFS.
      * @notice calling this function enables minting!! So don't call it unless you are sure.
-     * @notice RECOMMENDED NOT TO CALL THIS FUNCTION UNTILL ALL THE ART IS UPLOADED TO IPFS!!
+     * @notice RECOMMENDED NOT TO CALL THIS FUNCTION UNTILL ALL THE ART IS UPLOADED TO IPFS TO SAVE ON GAS!!
      */
     function setBaseURIcid(string memory cid) public onlyOwner {
         baseURIcid = cid;
@@ -66,16 +68,40 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         return bytes(baseURIcid).length > 0 ? string(abi.encodePacked("ipfs://", baseURIcid, "/", tokenId.toString(), ".json")) : "";
     }
 
+    /**
+     * @dev Launch the project
+     */
     function launch() public onlyOwner {
-        require(launched == false, "Already Loanched");
+        require(launched == false, "TraditionerativeArt: Already Loanched");
         launched = true;
+    }
+
+    /**
+     * @dev Add someone pre mint
+     * @param _address the address of the person to add
+     */
+    function addToPreMint(address _address) public onlyOwner {
+        require(launched == false, "TraditionerativeArt: Already Launched");
+        preMintParticipant[_address] = true;
     }
     
     /**
-     * @dev 50 tokens
+     * @dev pre minting the token (max 100 tokens)
+     * @dev For people who want to participate but aren't capable to particpate because of gas wars
+     * @notice only eligable people can pre minutes
+     * @notice pre minting can only 
      */
     function preMint() public payable {
-        require(msg.sender == preMintParticipant)
+        require(bytes(baseURIcid).length > 0, "TraditionerativeArt: No IPFS CID set. Minting will be enabled once setBaseURIcid(cid) will be called");
+        require(launched == false, "TraditionerativeArt: Pre mint phase is over. Please use safeMintTga(tokenCount))");
+        require(preMintParticipant[msg.sender], "TraditionerativeArt: Address not eligable for a pre mint");
+        require(balanceOf(msg.sender) > 0, "TraditionerativeArt: Address already participated in premint");
+        require(msg.value >= 10000000000000000, "TraditionerativeArt: Ether value sent is not correct"); // price for 1: 0.01 eth
+
+        _safeMint(msg.sender, _tokenId.current());
+
+        emit NewTgaMinted(_tokenId.current());
+        _tokenId.increment();
     }
 
     /**
