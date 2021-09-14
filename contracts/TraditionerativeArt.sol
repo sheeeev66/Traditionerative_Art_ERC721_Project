@@ -95,7 +95,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
         require(bytes(baseURIcid).length > 0, "TraditionerativeArt: No IPFS CID set. Minting will be enabled once setBaseURIcid(cid) will be called");
         require(launched == false, "TraditionerativeArt: Pre mint phase is over. Please use safeMintTga(tokenCount))");
         require(preMintParticipant[msg.sender], "TraditionerativeArt: Address not eligable for a pre mint");
-        require(balanceOf(msg.sender) > 0, "TraditionerativeArt: Address already participated in premint");
+        require(balanceOf(msg.sender) > 0, "TraditionerativeArt: Address already participated in pre mint");
         require(msg.value >= 10000000000000000, "TraditionerativeArt: Ether value sent is not correct"); // price for 1: 0.01 eth
 
         _safeMint(msg.sender, _tokenId.current());
