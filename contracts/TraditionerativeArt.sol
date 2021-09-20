@@ -22,7 +22,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
     // track token ID
     Counters.Counter private _tokenId;
 
-    // Loanch (when true its loanched)
+    // Launch (when true its launched)
     bool private launched;
     // base URI
     string private baseURIcid;
@@ -72,7 +72,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
      * @dev Launch the project
      */
     function launch() public onlyOwner {
-        require(launched == false, "TraditionerativeArt: Already Loanched");
+        require(launched == false, "TraditionerativeArt: Already Launched");
         launched = true;
     }
 
