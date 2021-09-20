@@ -169,7 +169,7 @@ contract TraditionerativeArt is Ownable, ERC721, IERC2981 {
             return false;
         }
         */
-        return (balanceOf(msg.sender) > 0) ? true : false;
+        return (balanceOf(msg.sender) > 0);
 
         // lmao dont laugh at me.. I was writing this function when I was half asleep
     }
